@@ -15,12 +15,12 @@
 
 ### 从源码构建
 
-\`\`\`bash
+```bash
 git clone https://github.com/shirnksky/bookmark-sync.git
 cd bookmark-sync
 pnpm install
 pnpm build
-\`\`\`
+```
 
 构建产物在 `.output/chrome-mv3`，在 `chrome://extensions/` 中开启开发者模式，点击"加载已解压的扩展程序"，选择该目录。
 
@@ -32,10 +32,10 @@ pnpm build
 
 ## 开发
 
-\`\`\`bash
+```bash
 pnpm install
 pnpm dev
-\`\`\`
+```
 
 基于 [WXT](https://wxt.dev/) 框架。
 
