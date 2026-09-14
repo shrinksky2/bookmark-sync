@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <title>Bookmark Sync 设置</title>
+  <meta name="manifest.open_in_tab" content="true" />
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      font-size: 14px;
+      color: #333;
+      background: #f7f8fa;
+    }
+
+    /* ========== 布局 ========== */
+
+    .layout {
+      display: flex;
+      height: 100vh;
+    }
+
+    /* 左侧导航 */
+    .sidebar {
+      width: 200px;
+      background: #fff;
+      border-right: 1px solid #e5e7eb;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+
+    .brand {
+      padding: 20px 20px 16px;
+      font-size: 15px;
+      font-weight: 700;
+      color: #111;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .nav {
+      padding: 12px 8px;
+      flex: 1;
+    }
+
+    .nav-item {
+      display: block;
+      width: 100%;
+      padding: 9px 12px;
+      margin-bottom: 2px;
+      border: none;
+      background: transparent;
+      text-align: left;
+      font-size: 13px;
+      color: #555;
+      cursor: pointer;
+      border-radius: 6px;
+      font-family: inherit;
+    }
+
+    .nav-item:hover {
+      background: #f3f4f6;
+      color: #111;
+    }
+
+    .nav-item.active {
+      background: #eef2ff;
+      color: #4f46e5;
+      font-weight: 600;
+    }
+
+    /* 右侧内容 */
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 32px 40px;
+    }
+
+    .panel {
+      display: none;
+      max-width: 640px;
+    }
+
+    .panel.active {
+      display: block;
+    }
+
+    .panel h1 {
+      font-size: 20px;
+      margin: 0 0 6px;
+      color: #111;
+    }
+
+    .panel .panel-desc {
+      color: #6b7280;
+      font-size: 13px;
+      margin-bottom: 24px;
+    }
+
+    /* ========== 表单 ========== */
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+      font-size: 13px;
+      color: #374151;
+    }
+
+    input[type="text"],
+    input[type="password"],
+    input[type="number"] {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-size: 13px;
+      font-family: inherit;
+      background: #fff;
+    }
+
+    input[type="text"]:focus,
+    input[type="password"]:focus,
+    input[type="number"]:focus {
+      outline: none;
+      border-color: #6366f1;
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+    }
+
+    button {
+      padding: 8px 16px;
+      border: 1px solid #d1d5db;
+      background: #fff;
+      border-radius: 6px;
+      font-size: 13px;
+      font-family: inherit;
+      cursor: pointer;
+      color: #374151;
+      white-space: nowrap;
+    }
+
+    button:hover:not(:disabled) {
+      background: #f9fafb;
+      border-color: #9ca3af;
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    button.primary {
+      background: #4f46e5;
+      color: #fff;
+      border-color: #4f46e5;
+    }
+
+    button.primary:hover:not(:disabled) {
+      background: #4338ca;
+      border-color: #4338ca;
+    }
+
+    .row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .row input {
+      flex: 1;
+    }
+
+    .hint {
+      font-size: 12px;
+      color: #9ca3af;
+      margin-top: 6px;
+      line-height: 1.6;
+    }
+
+    .status {
+      font-size: 13px;
+      margin-top: 10px;
+    }
+
+    .status.ok {
+      color: #16a34a;
+    }
+
+    .status.err {
+      color: #dc2626;
+    }
+
+    /* Gist 链接 */
+    .gist-link-box {
+      margin-top: 8px;
+      padding: 8px 12px;
+      background: #f3f4f6;
+      border-radius: 6px;
+      font-size: 13px;
+    }
+
+    .gist-link-label {
+      color: #6b7280;
+    }
+
+    #gist-link {
+      color: #4f46e5;
+      text-decoration: none;
+      word-break: break-all;
+    }
+
+    #gist-link:hover {
+      text-decoration: underline;
+    }
+
+    /* checkbox 行 */
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 0;
+    }
+
+    .checkbox-row label {
+      margin: 0;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .checkbox-row input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+
+    /* 分隔线 */
+    .divider {
+      height: 1px;
+      background: #f0f0f0;
+      margin: 24px 0;
+    }
+
+    /* 关于页 */
+    .about-item {
+      margin-bottom: 12px;
+      font-size: 13px;
+      color: #6b7280;
+      line-height: 1.6;
+    }
+
+    .about-item b {
+      color: #374151;
+    }
+
+    .panel-footer {
+      margin-top: 32px;
+      padding-top: 20px;
+      border-top: 1px solid #f0f0f0;
+    }
+
+    .panel-footer button {
+      padding: 9px 20px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="layout">
+    <!-- 左侧导航 -->
+    <aside class="sidebar">
+      <div class="brand">Bookmark Sync</div>
+      <nav class="nav">
+        <button class="nav-item active" data-target="panel-account">
+          账号
+        </button>
+        <button class="nav-item" data-target="panel-sync">
+          同步
+        </button>
+        <button class="nav-item" data-target="panel-about">
+          关于
+        </button>
+      </nav>
+    </aside>
+
+    <!-- 右侧内容 -->
+    <main class="content">
+      <!-- ========== 账号 ========== -->
+      <section id="panel-account" class="panel active">
+        <h1>账号</h1>
+        <div class="panel-desc">
+          配置 GitHub Token 与 Gist，用于跨设备同步书签。
+        </div>
+
+        <div class="form-group">
+          <label>GitHub Token</label>
+          <div class="row">
+            <input type="password" id="token" placeholder="粘贴你的 GitHub Token" />
+            <button id="token-link" type="button">获取 Token</button>
+          </div>
+          <div class="hint">
+            需要勾选 <b>gist</b> 权限。点击右侧按钮会打开 GitHub 生成页并自动勾选。
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Gist ID</label>
+          <div class="row">
+            <input type="text" id="gistId" placeholder="点击右侧按钮创建" />
+            <button id="create-gist" type="button">创建 Gist</button>
+          </div>
+
+          <!-- Gist 链接 -->
+          <div id="gist-link-box" class="gist-link-box" style="display: none;">
+            <span class="gist-link-label">Gist 地址：</span>
+            <a id="gist-link" href="#" target="_blank" rel="noopener noreferrer"></a>
+          </div>
+
+          <div class="hint">
+            · 首次使用：填 Token → 点"创建 Gist" → 保存<br />
+            · 其他设备：填同一个 Token 和 Gist ID → 保存
+          </div>
+        </div>
+
+        <div id="gist-status" class="status"></div>
+        <!-- 新增：账号保存按钮 -->
+        <div class="panel-footer">
+          <button id="save-account" class="primary">保存账号设置</button>
+        </div>
+      </section>
+
+      <!-- ========== 同步 ========== -->
+      <section id="panel-sync" class="panel">
+        <h1>同步</h1>
+        <div class="panel-desc">
+          配置自动同步的间隔与开关。
+        </div>
+
+        <div class="form-group">
+          <label>自动同步间隔（分钟）</label>
+          <input type="number" id="syncInterval" min="1" value="30" />
+          <div class="hint">
+            建议 30 分钟以上。最小值为 1 分钟，浏览器不允许更短的周期。
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="checkbox-row">
+          <input type="checkbox" id="autoSync" />
+          <label for="autoSync">开启自动同步</label>
+        </div>
+        <div class="hint" style="margin-top: 0;">
+          开启后，浏览器会按上面的间隔自动同步书签。
+        </div>
+
+        <div id="sync-status" class="status"></div>
+        <!-- 新增：同步保存按钮 -->
+        <div class="panel-footer">
+          <button id="save-sync" class="primary">保存同步设置</button>
+        </div>
+      </section>
+
+      <!-- ========== 关于 ========== -->
+      <section id="panel-about" class="panel">
+        <h1>关于</h1>
+        <div class="panel-desc">
+          跨浏览器书签同步插件
+        </div>
+
+        <div class="about-item">
+          <b>版本：</b>1.0.0
+        </div>
+        <div class="about-item">
+          <b>作者：</b>shirnksky
+        </div>
+        <div class="about-item">
+          <b>数据存储：</b>GitHub Gist（私有）
+        </div>
+        <div class="about-item">
+          <b>支持浏览器：</b>Chrome、Edge、Firefox
+        </div>
+        <div class="about-item">
+          <b>功能：</b>一键上传 / 下载、自动同步、覆盖上传、从云端下载
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script type="module" src="./main.ts"></script>
+</body>
+
+</html>
