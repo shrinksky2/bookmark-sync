@@ -4,7 +4,7 @@ export default defineConfig({
   manifest: {
     name: 'Bookmark Sync',
     description: '跨浏览器书签同步插件',
-    version: '1.0.0',
+    version: '1.0.1',
     permissions: [
       'bookmarks',
       'storage',

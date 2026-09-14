@@ -83,6 +83,17 @@ function bindTokenLinkClick() {
   });
 }
 
+function bindRepoLinkClick() {
+  const link = document.getElementById('repo-link') as HTMLAnchorElement | null;
+  if (!link) return;
+  link.addEventListener('click', (e) => {
+    e.preventDefault();
+    browser.tabs.create({
+      url: 'https://github.com/shirnksky/bookmark-sync',
+    });
+  });
+}
+
 // ========== 加载已有配置 ==========
 
 async function load() {
@@ -123,6 +134,13 @@ async function load() {
     (cfg.syncInterval as number) ?? 30
   );
   getInput('autoSync').checked = cfg.autoSync !== false;
+
+  // 从 manifest 读取版本号
+  const manifest = browser.runtime.getManifest();
+  const versionEl = document.getElementById('version');
+  if (versionEl) {
+    versionEl.textContent = manifest.version;
+  }
 
   // 从 popup 跳转来的高亮
   const { optionsHighlight } = await browser.storage.local.get(
@@ -386,4 +404,5 @@ function setupNav() {
 setupNav();
 bindTokenLinkClick();
 bindGistLinkClick();
+bindRepoLinkClick();
 load();

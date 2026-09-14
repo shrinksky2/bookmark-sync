@@ -305,6 +305,15 @@
       font-family: ui-monospace, Consolas, monospace;
       color: #4f46e5;
     }
+
+    .about-link {
+      color: #4f46e5;
+      text-decoration: none;
+    }
+
+    .about-link:hover {
+      text-decoration: underline;
+    }
   </style>
 </head>
 
@@ -463,19 +472,23 @@
         </div>
 
         <div class="about-item">
-          <b>版本：</b>1.0.0
+          <b>版本：</b><span id="version">-</span>
         </div>
         <div class="about-item">
           <b>作者：</b>shirnksky
         </div>
         <div class="about-item">
-          <b>数据存储：</b>GitHub Gist（私有）
+          <b>数据存储：</b>GitHub Gist（私有） / WebDAV
         </div>
         <div class="about-item">
           <b>支持浏览器：</b>Chrome、Edge、Firefox
         </div>
         <div class="about-item">
-          <b>功能：</b>一键上传 / 下载、自动同步、覆盖上传、从云端下载
+          <b>功能：</b>一键同步、自动同步、覆盖上传、从云端下载
+        </div>
+        <div class="about-item">
+          <b>开源地址：</b>
+          <a id="repo-link" href="#" class="about-link">github.com/shirnksky2/bookmark-sync</a>
         </div>
       </section>
     </main>
