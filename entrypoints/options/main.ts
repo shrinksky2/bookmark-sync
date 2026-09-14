@@ -1,6 +1,13 @@
 import browser from 'webextension-polyfill';
 import { GistProvider } from '@/core/providers/gist';
 import { WebDAVProvider } from '@/core/providers/webdav';
+import {
+  exportToHTML,
+  exportToJSON,
+  buildFilename,
+  downloadFile,
+} from '@/core/io/export';
+import { readBookmarkTree } from '@/core/bookmark/reader';
 
 // ========== 工具函数 ==========
 
@@ -89,7 +96,7 @@ function bindRepoLinkClick() {
   link.addEventListener('click', (e) => {
     e.preventDefault();
     browser.tabs.create({
-      url: 'https://github.com/shirnksky/bookmark-sync',
+      url: 'https://github.com/shrinksky2/bookmark-sync',
     });
   });
 }
@@ -357,6 +364,48 @@ document.getElementById('save-sync')!.addEventListener('click', async () => {
 
   flashButton('save-sync', '已保存');
 });
+
+// ========== 导出 ==========
+
+async function handleExport(format: 'html' | 'json') {
+  try {
+    const bookmarks = await readBookmarkTree();
+    const urlCount = bookmarks.filter(b => b.url).length;
+
+    if (urlCount === 0) {
+      alert('当前没有书签可导出');
+      return;
+    }
+
+    let content: string;
+    let mime: string;
+    let ext: 'html' | 'json';
+
+    if (format === 'html') {
+      content = exportToHTML(bookmarks);
+      mime = 'text/html;charset=utf-8';
+      ext = 'html';
+    } else {
+      content = exportToJSON(bookmarks);
+      mime = 'application/json;charset=utf-8';
+      ext = 'json';
+    }
+
+    const filename = buildFilename(ext);
+    downloadFile(content, filename, mime);
+  } catch (e) {
+    console.error(e);
+    alert(`导出失败：${(e as Error).message}`);
+  }
+}
+
+document
+  .getElementById('export-html')!
+  .addEventListener('click', () => handleExport('html'));
+
+document
+  .getElementById('export-json')!
+  .addEventListener('click', () => handleExport('json'));
 
 // ========== 事件绑定 ==========
 

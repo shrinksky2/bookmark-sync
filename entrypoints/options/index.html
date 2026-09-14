@@ -314,6 +314,23 @@
     .about-link:hover {
       text-decoration: underline;
     }
+
+    .section-heading {
+      font-size: 14px;
+      font-weight: 600;
+      color: #374151;
+      margin: 20px 0 6px;
+    }
+
+    .row-buttons-wide {
+      display: flex;
+      gap: 8px;
+    }
+
+    .row-buttons-wide button {
+      flex: 1;
+      padding: 10px;
+    }
   </style>
 </head>
 
@@ -328,6 +345,9 @@
         </button>
         <button class="nav-item" data-target="panel-sync">
           同步
+        </button>
+        <button class="nav-item" data-target="panel-data">
+          数据
         </button>
         <button class="nav-item" data-target="panel-about">
           关于
@@ -464,6 +484,27 @@
         </div>
       </section>
 
+      <!-- ========== 数据 ========== -->
+      <section id="panel-data" class="panel">
+        <h1>数据</h1>
+        <div class="panel-desc">
+          导出书签用于备份或迁移，或从文件恢复书签。
+        </div>
+
+        <h2 class="section-heading">导出</h2>
+        <div class="hint" style="margin-top: 0; margin-bottom: 10px;">
+          将当前本地书签保存为文件。
+        </div>
+        <div class="row-buttons-wide">
+          <button id="export-html" type="button">导出为 HTML</button>
+          <button id="export-json" type="button">导出为 JSON</button>
+        </div>
+        <div class="hint">
+          · <b>HTML</b>：浏览器通用格式，可导入 Chrome / Edge / Firefox<br />
+          · <b>JSON</b>：完整格式，保留所有字段，用于本插件恢复
+        </div>
+      </section>
+
       <!-- ========== 关于 ========== -->
       <section id="panel-about" class="panel">
         <h1>关于</h1>
@@ -488,7 +529,7 @@
         </div>
         <div class="about-item">
           <b>开源地址：</b>
-          <a id="repo-link" href="#" class="about-link">github.com/shirnksky2/bookmark-sync</a>
+          <a id="repo-link" href="#" class="about-link">github.com/shrinksky2/bookmark-sync</a>
         </div>
       </section>
     </main>
