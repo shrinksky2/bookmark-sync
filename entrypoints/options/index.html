@@ -273,6 +273,38 @@
     .panel-footer button {
       padding: 9px 20px;
     }
+
+    .radio-row {
+      display: flex;
+      gap: 20px;
+      padding: 6px 0;
+    }
+
+    .radio-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      font-weight: 500;
+      font-size: 13px;
+      margin: 0;
+    }
+
+    .radio-item input[type="radio"] {
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+      margin: 0;
+    }
+
+    code {
+      background: #f3f4f6;
+      padding: 1px 6px;
+      border-radius: 3px;
+      font-size: 12px;
+      font-family: ui-monospace, Consolas, monospace;
+      color: #4f46e5;
+    }
   </style>
 </head>
 
@@ -300,41 +332,92 @@
       <section id="panel-account" class="panel active">
         <h1>账号</h1>
         <div class="panel-desc">
-          配置 GitHub Token 与 Gist，用于跨设备同步书签。
+          选择同步方式，并配置对应的远程存储。
         </div>
 
+        <!-- 同步方式选择 -->
         <div class="form-group">
-          <label>GitHub Token</label>
-          <div class="row">
-            <input type="password" id="token" placeholder="粘贴你的 GitHub Token" />
-            <button id="token-link" type="button">获取 Token</button>
-          </div>
-          <div class="hint">
-            需要勾选 <b>gist</b> 权限。点击右侧按钮会打开 GitHub 生成页并自动勾选。
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label>Gist ID</label>
-          <div class="row">
-            <input type="text" id="gistId" placeholder="点击右侧按钮创建" />
-            <button id="create-gist" type="button">创建 Gist</button>
-          </div>
-
-          <!-- Gist 链接 -->
-          <div id="gist-link-box" class="gist-link-box" style="display: none;">
-            <span class="gist-link-label">Gist 地址：</span>
-            <a id="gist-link" href="#" target="_blank" rel="noopener noreferrer"></a>
-          </div>
-
-          <div class="hint">
-            · 首次使用：填 Token → 点"创建 Gist" → 保存<br />
-            · 其他设备：填同一个 Token 和 Gist ID → 保存
+          <label>同步方式</label>
+          <div class="radio-row">
+            <label class="radio-item">
+              <input type="radio" name="providerType" value="gist" id="type-gist" />
+              GitHub Gist
+            </label>
+            <label class="radio-item">
+              <input type="radio" name="providerType" value="webdav" id="type-webdav" />
+              WebDAV
+            </label>
           </div>
         </div>
 
-        <div id="gist-status" class="status"></div>
-        <!-- 新增：账号保存按钮 -->
+        <div class="divider"></div>
+
+        <!-- Gist 配置 -->
+        <div id="config-gist">
+          <div class="form-group">
+            <label>GitHub Token</label>
+            <div class="row">
+              <input type="password" id="token" placeholder="粘贴你的 GitHub Token" />
+              <button id="token-link" type="button">获取 Token</button>
+            </div>
+            <div class="hint">
+              需要勾选 <b>gist</b> 权限。
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Gist ID</label>
+            <div class="row">
+              <input type="text" id="gistId" placeholder="点击右侧按钮创建" />
+              <button id="create-gist" type="button">创建 Gist</button>
+            </div>
+
+            <div id="gist-link-box" class="gist-link-box" style="display: none;">
+              <span class="gist-link-label">Gist 地址：</span>
+              <a id="gist-link" href="#" target="_blank" rel="noopener noreferrer"></a>
+            </div>
+
+            <div class="hint">
+              · 首次使用：填 Token → 点"创建 Gist" → 保存<br />
+              · 其他设备：填同一个 Token 和 Gist ID → 保存
+            </div>
+          </div>
+
+          <div id="gist-status" class="status"></div>
+        </div>
+
+        <!-- WebDAV 配置 -->
+        <div id="config-webdav" style="display: none;">
+          <div class="form-group">
+            <label>Endpoint（目录地址）</label>
+            <input type="text" id="webdavUrl" placeholder="https://your-nas.local/dav/bookmark-sync/" />
+            <div class="hint">
+              填到目录为止，末尾带或不带 <code>/</code> 均可，插件会自动拼接
+              <code>bookmarks.json</code>。
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>用户名</label>
+            <input type="text" id="webdavUsername" placeholder="WebDAV 用户名" />
+          </div>
+
+          <div class="form-group">
+            <label>密码</label>
+            <input type="password" id="webdavPassword" placeholder="WebDAV 密码" />
+          </div>
+
+          <div class="form-group">
+            <button id="test-webdav" type="button">测试连接</button>
+            <div id="webdav-status" class="status"></div>
+          </div>
+
+          <div class="hint">
+            建议先用"测试连接"确认配置正确，再保存。
+          </div>
+        </div>
+
+        <!-- 保存按钮 -->
         <div class="panel-footer">
           <button id="save-account" class="primary">保存账号设置</button>
         </div>

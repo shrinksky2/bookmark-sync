@@ -1,12 +1,12 @@
 import browser from 'webextension-polyfill';
 import { readBookmarkTree } from '@/core/bookmark/reader';
 import { applyBookmarkTree } from '@/core/bookmark/writer';
-import { getProvider } from '@/core/providers';
 import { hashBookmarks } from '@/utils/hash';
 import { getSyncState, setSyncState } from './state';
 import { createSnapshot } from './snapshot';
 import { checkFailsafe } from './guard';
 import { mergeBookmarks } from './conflict';
+import { getProvider, checkProviderReady } from '@/core/providers';
 
 // ========== 同步状态提示 ==========
 
@@ -128,13 +128,8 @@ class SyncEngine {
       throw new Error('已有同步任务进行中，请稍候');
     }
 
-    const { token, gistId } = await browser.storage.sync.get([
-      'token',
-      'gistId',
-    ]);
-    if (!token || !gistId) {
-      throw new Error('尚未绑定设备：请先在设置页填写 Token 和 Gist ID');
-    }
+    const readyErr = await checkProviderReady();
+    if (readyErr) throw new Error(readyErr);
 
     const provider = await getProvider();
     if (!provider) throw new Error('Provider 未配置');
@@ -195,13 +190,8 @@ class SyncEngine {
       throw new Error('已有同步任务进行中，请稍候');
     }
 
-    const { token, gistId } = await browser.storage.sync.get([
-      'token',
-      'gistId',
-    ]);
-    if (!token || !gistId) {
-      throw new Error('尚未绑定设备：请先在设置页填写 Token 和 Gist ID');
-    }
+    const readyErr = await checkProviderReady();
+    if (readyErr) throw new Error(readyErr);
 
     const provider = await getProvider();
     if (!provider) throw new Error('Provider 未配置');
@@ -247,14 +237,9 @@ class SyncEngine {
   }
 
   private async runFlow(): Promise<void> {
-    // 前置检查：配置是否完整
-    const { token, gistId } = await browser.storage.sync.get([
-      'token',
-      'gistId',
-    ]);
-    if (!token || !gistId) {
-      throw new Error('尚未绑定设备：请先在设置页填写 Token 和 Gist ID');
-    }
+    // 前置检查：配置是否完整（自动适配当前 Provider）
+    const readyErr = await checkProviderReady();
+    if (readyErr) throw new Error(readyErr);
 
     const provider = await getProvider();
     if (!provider) throw new Error('Provider 未配置，请先在设置页配置');

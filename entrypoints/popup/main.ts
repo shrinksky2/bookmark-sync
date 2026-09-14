@@ -1,6 +1,6 @@
 import browser from 'webextension-polyfill';
 import { readBookmarkTree } from '@/core/bookmark/reader';
-import { getProvider } from '@/core/providers';
+import { getProvider, checkProviderReady } from '@/core/providers';
 import type { BackgroundMessage } from '@/utils/types';
 
 function getEl(id: string): HTMLElement {
@@ -19,11 +19,6 @@ interface LastSyncInfo {
   error?: string;
 }
 
-async function getConfig(): Promise<Config> {
-  const cfg = await browser.storage.sync.get(['token', 'gistId']);
-  return cfg as Config;
-}
-
 function showNotice(text: string) {
   getEl('notice-text').textContent = text;
   getEl('notice').classList.add('show');
@@ -34,10 +29,7 @@ function hideNotice() {
 }
 
 async function checkBound(): Promise<string | null> {
-  const cfg = await getConfig();
-  if (!cfg.token) return '尚未填写 GitHub Token，请先绑定设备。';
-  if (!cfg.gistId) return '尚未创建或填写 Gist ID，请先绑定设备。';
-  return null;
+  return checkProviderReady();
 }
 
 // ========== 数量显示 ==========
